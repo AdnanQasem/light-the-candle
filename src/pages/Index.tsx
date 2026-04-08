@@ -206,9 +206,6 @@ const Index = () => (
 );
 
 export default Index;
-          Real stories from real people whose candles were lit by generous donors.
-        </p>
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
         {[
           { quote: "When I saw the medical supplies arrive, I cried. My children can finally get the treatment they need. Thank you for seeing us.", name: "Um Ahmad", location: "Gaza City" },
