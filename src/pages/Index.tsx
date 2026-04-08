@@ -206,7 +206,6 @@ const Index = () => (
 );
 
 export default Index;
-        <p className="text-primary-foreground/70 max-w-xl mx-auto">
           Real stories from real people whose candles were lit by generous donors.
         </p>
       </div>
