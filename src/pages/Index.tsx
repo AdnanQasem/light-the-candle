@@ -7,6 +7,9 @@ import CandleCard from "@/components/CandleCard";
 import { mockCandles } from "@/data/mockCandles";
 import heroImage from "@/assets/hero-candle.jpg";
 import candlesCommunity from "@/assets/candles-community.jpg";
+import CTASection from "@/components/landing/CTASection";
+import SuccessStories from "@/components/landing/SuccessStories";
+import GazaMapSection from "@/components/landing/GazaMapSection";
 
 const HeroSection = () => (
   <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
@@ -186,56 +189,6 @@ const MissionSection = () => (
   </section>
 );
 
-const SuccessStories = () => (
-  <section className="py-20 bg-primary text-primary-foreground">
-    <div className="container mx-auto px-4">
-      <div className="text-center mb-12">
-        <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">Stories of Light</h2>
-        <p className="text-primary-foreground/70 max-w-xl mx-auto">
-          Real stories from real people whose candles were lit by generous donors.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-        {[
-          { quote: "When I saw the medical supplies arrive, I cried. My children can finally get the treatment they need. Thank you for seeing us.", name: "Um Ahmad", location: "Gaza City" },
-          { quote: "The water filter changed everything for our community. Clean water seemed impossible, but generous hearts made it real.", name: "Abu Khalil", location: "North Gaza" },
-          { quote: "My son received a prosthetic and walked for the first time in months. The donors gave him more than mobility — they gave him hope.", name: "Fatima H.", location: "Khan Yunis" },
-        ].map((story) => (
-          <div key={story.name} className="bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-6">
-            <Flame className="h-6 w-6 text-amber mb-4" />
-            <p className="text-sm text-primary-foreground/80 leading-relaxed mb-6 italic">
-              "{story.quote}"
-            </p>
-            <div>
-              <div className="font-semibold text-primary-foreground">{story.name}</div>
-              <div className="text-xs text-primary-foreground/50">{story.location}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-);
-
-const CTASection = () => (
-  <section className="py-20 text-center">
-    <div className="container mx-auto px-4 max-w-3xl">
-      <Flame className="h-12 w-12 text-amber mx-auto mb-6 animate-flicker" />
-      <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-6">
-        Be the Light Someone<br />Is Waiting For
-      </h2>
-      <p className="text-muted-foreground mb-8 text-lg">
-        Browse verified cases, choose a candle, and make a difference that you can see and track.
-      </p>
-      <Button variant="hero" size="lg" className="text-lg px-10 py-6" asChild>
-        <Link to="/candles">
-          <Heart className="h-5 w-5 mr-2" /> Browse Candles Now
-        </Link>
-      </Button>
-    </div>
-  </section>
-);
-
 const Index = () => (
   <div className="min-h-screen">
     <Navbar />
@@ -244,6 +197,7 @@ const Index = () => (
     <ImpactStats />
     <FeaturedCandles />
     <HowItWorks />
+    <GazaMapSection />
     <MissionSection />
     <SuccessStories />
     <CTASection />
