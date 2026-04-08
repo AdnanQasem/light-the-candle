@@ -189,11 +189,23 @@ const MissionSection = () => (
   </section>
 );
 
-const SuccessStories = () => (
-  <section className="py-20 bg-primary text-primary-foreground">
-    <div className="container mx-auto px-4">
-      <div className="text-center mb-12">
-        <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">Stories of Light</h2>
+const Index = () => (
+  <div className="min-h-screen">
+    <Navbar />
+    <HeroSection />
+    <TrustBar />
+    <ImpactStats />
+    <FeaturedCandles />
+    <HowItWorks />
+    <GazaMapSection />
+    <MissionSection />
+    <SuccessStories />
+    <CTASection />
+    <Footer />
+  </div>
+);
+
+export default Index;
         <p className="text-primary-foreground/70 max-w-xl mx-auto">
           Real stories from real people whose candles were lit by generous donors.
         </p>
