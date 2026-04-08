@@ -7,6 +7,9 @@ import CandleCard from "@/components/CandleCard";
 import { mockCandles } from "@/data/mockCandles";
 import heroImage from "@/assets/hero-candle.jpg";
 import candlesCommunity from "@/assets/candles-community.jpg";
+import CTASection from "@/components/landing/CTASection";
+import SuccessStories from "@/components/landing/SuccessStories";
+import GazaMapSection from "@/components/landing/GazaMapSection";
 
 const HeroSection = () => (
   <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
