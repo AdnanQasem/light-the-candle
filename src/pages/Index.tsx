@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { ArrowRight, CheckCircle, Eye, Flame, Heart, MapPin, Play, Shield, Sparkles, TimerReset, Users } from "lucide-react";
@@ -145,10 +145,10 @@ const HeroSection = () => {
             <div className="mb-12 flex flex-col items-center justify-center gap-5 sm:flex-row lg:justify-start">
               <Button variant="amber" size="lg" className="group h-[52px] w-full overflow-hidden rounded-full px-8 text-[15px] font-semibold transition-all duration-300 hover:shadow-[0_20px_40px_rgba(245,179,65,0.3)] sm:w-auto" asChild>
                 <Link to="/candles" className="relative flex items-center gap-2">
-                  <span className="absolute inset-0 w-full translate-x-[-100%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 group-hover:translate-x-[100%]" />
-                  <Heart className="h-5 w-5 fill-current" />
-                  Light a Candle
-                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1.5" />
+                  <span className="pointer-events-none absolute inset-0 w-full translate-x-[-100%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 group-hover:translate-x-[100%]" />
+                  <Heart className="relative z-10 h-5 w-5 fill-current" />
+                  <span className="relative z-10">Light a Candle</span>
+                  <ArrowRight className="relative z-10 h-5 w-5 transition-transform group-hover:translate-x-1.5" />
                 </Link>
               </Button>
               <Button
@@ -275,120 +275,210 @@ const HeroSection = () => {
   );
 };
 
-const FeaturedCandles = () => (
-  <section className="section-shell uniform-section overflow-hidden bg-secondary/30 px-4 md:px-6">
-    <div className="mx-auto max-w-7xl">
-      <div className="relative overflow-hidden rounded-[40px] border border-white/60 bg-[linear-gradient(180deg,rgba(255,252,246,0.92),rgba(245,236,223,0.88))] px-5 py-6 shadow-[0_28px_90px_rgba(28,43,64,0.08)] backdrop-blur-xl md:px-8 md:py-8 xl:px-10 xl:py-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(245,179,65,0.16),transparent_32%),radial-gradient(circle_at_100%_35%,rgba(28,43,64,0.08),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.18),transparent_100%)]" />
-        <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay">
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
-            <filter id="noiseFilterFeatured">
-              <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" />
-            </filter>
-            <rect width="100%" height="100%" filter="url(#noiseFilterFeatured)" />
-          </svg>
+const FeaturedCandles = () => {
+  const [activeFilter, setActiveFilter] = useState<"All" | "Critical" | "Medical" | "Shelter" | "Food">("All");
+  const filterOptions: Array<"All" | "Critical" | "Medical" | "Shelter" | "Food"> = ["All", "Critical", "Medical", "Shelter", "Food"];
+
+  const featuredCandles = useMemo(() => {
+    const urgencyRank = { critical: 0, high: 1, medium: 2 } as const;
+
+    return mockCandles
+      .filter((candle) => {
+        if (activeFilter === "All") return true;
+        if (activeFilter === "Critical") return candle.urgency === "critical";
+        return candle.category === activeFilter;
+      })
+      .sort((a, b) => urgencyRank[a.urgency] - urgencyRank[b.urgency]);
+  }, [activeFilter]);
+
+  const urgencyUI = {
+    critical: {
+      label: "Critical",
+      badge: "border-[#E24B4A] bg-[#FCEBEB] text-[#A32D2D]",
+      progress: "bg-[#E24B4A]",
+      cardBorder: "border-[1.5px] border-[#E24B4A]",
+      button: "bg-[#E24B4A] text-white",
+    },
+    high: {
+      label: "High",
+      badge: "border-[#BA7517] bg-[#FAEEDA] text-[#854F0B]",
+      progress: "bg-[#BA7517]",
+      cardBorder: "border border-border",
+      button: "bg-[#17212B] text-white",
+    },
+    medium: {
+      label: "Active",
+      badge: "border-[#7BA34D] bg-[#EAF3DE] text-[#3B6D11]",
+      progress: "bg-[#1D9E75]",
+      cardBorder: "border border-border",
+      button: "bg-[#17212B] text-white",
+    },
+  } as const;
+
+  const donorInitials = [
+    ["AN", "LM", "SR"],
+    ["MH", "RA", "DK"],
+    ["YA", "NO", "EM"],
+    ["AL", "MS", "HN"],
+    ["FA", "RM", "IS"],
+    ["SA", "TJ", "HB"],
+  ];
+
+  return (
+    <section className="section-shell overflow-hidden bg-secondary/30 px-4 py-16 md:px-6 md:py-20">
+      <div className="mx-auto max-w-7xl">
+        <motion.div {...fadeUp} className="mb-5">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Featured candles</div>
+          <h2 className="mt-2 text-[18px] font-medium text-foreground">Cases that need your light</h2>
+          <p className="mt-1 text-[13px] text-muted-foreground">Every case is field-verified. Updated daily.</p>
+        </motion.div>
+
+        <div className="mb-6 flex flex-wrap gap-2">
+          {filterOptions.map((filter) => (
+            <motion.button
+              key={filter}
+              type="button"
+              onClick={() => setActiveFilter(filter)}
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              className={
+                activeFilter === filter
+                  ? "rounded-full bg-[#17212B] px-4 py-2 text-sm font-medium text-white shadow-[0_10px_24px_rgba(23,33,43,0.18)]"
+                  : "rounded-full border border-border bg-white px-4 py-2 text-sm font-medium text-foreground shadow-[0_6px_16px_rgba(23,33,43,0.08)]"
+              }
+            >
+              {filter}
+            </motion.button>
+          ))}
         </div>
 
-        <div className="relative">
-          <motion.div {...fadeUp} className="mb-8 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-            <div className="max-w-3xl">
-              <div className="section-kicker mb-4">
-                <Heart className="h-3.5 w-3.5" />
-                Featured candles
-              </div>
-              <h2 className="editorial-title max-w-3xl">Support the cases that are both urgent and already moving.</h2>
-              <p className="editorial-copy mt-4 max-w-2xl">
-                The lead candle shows where momentum is strongest right now. Supporting cases stay compact and scannable so donors can compare urgency, progress, and remaining need in a few seconds.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row xl:items-center">
-              <div className="grid grid-cols-2 gap-3 sm:min-w-[22rem]">
-                {[
-                  { icon: Shield, label: "Verified first", value: "4 active cases" },
-                  { icon: TimerReset, label: "Critical window", value: "4-11 days left" },
-                ].map(({ icon: Icon, label, value }) => (
-                  <div
-                    key={label}
-                    className="rounded-[24px] border border-white/70 bg-white/72 px-4 py-3 shadow-[0_12px_30px_rgba(28,43,64,0.05)] backdrop-blur-md"
-                  >
-                    <div
-                      className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-amber/15"
-                      style={{ color: "hsl(var(--amber-dark))" }}
-                    >
-                      <Icon className="h-4 w-4" />
+        <motion.div
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="whileInView"
+          viewport={{ once: true, amount: 0.08 }}
+          className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+        >
+          {featuredCandles.map((candle, index) => {
+            const progress = Math.min((candle.fundedAmount / candle.targetAmount) * 100, 100);
+            const remaining = Math.max(candle.targetAmount - candle.fundedAmount, 0);
+            const donorCount = candle.donorCount ?? Math.max(Math.round(candle.fundedAmount / 45), 12);
+            const daysLeft = candle.daysLeft ?? Math.max(3, 12 - Number(candle.id));
+            const ui = urgencyUI[candle.urgency];
+            const ctaText =
+              candle.urgency === "critical"
+                ? `Donate now  ${remaining.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })} still needed`
+                : candle.urgency === "high"
+                  ? `Light this candle  ${remaining.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })} to go`
+                  : "Support this family";
+
+            return (
+              <motion.article
+                key={candle.id}
+                variants={staggerItem}
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                className={`overflow-hidden rounded-[12px] bg-white shadow-[0_14px_32px_rgba(23,33,43,0.10)] hover:shadow-[0_18px_40px_rgba(23,33,43,0.14)] ${ui.cardBorder}`}
+              >
+                <Link to={`/candles/${candle.id}`} className="block">
+                  <div className="relative h-[130px] overflow-hidden bg-[#E5E7EB]">
+                    <motion.img
+                      src={candle.image}
+                      alt={candle.title}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                      whileHover={{ scale: 1.04 }}
+                      transition={{ duration: 0.35, ease: "easeOut" }}
+                    />
+                    <div className="absolute left-3 top-3">
+                      <motion.span
+                        animate={candle.urgency === "critical" ? { scale: [1, 1.03, 1] } : undefined}
+                        transition={candle.urgency === "critical" ? { duration: 1.8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" } : undefined}
+                        className={`inline-flex rounded-[20px] border px-2.5 py-1 text-[11px] font-semibold ${ui.badge}`}
+                      >
+                        {ui.label}
+                      </motion.span>
                     </div>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">{label}</div>
-                    <div className="mt-1 text-sm font-semibold text-foreground">{value}</div>
+                    <div className="absolute right-3 top-3">
+                      <motion.span
+                        initial={{ opacity: 0, y: -4 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.22, delay: 0.08 }}
+                        className="inline-flex rounded-[20px] border border-[#7BA34D] bg-[#EAF3DE] px-2.5 py-1 text-[11px] font-semibold text-[#3B6D11]"
+                      >
+                        Verified
+                      </motion.span>
+                    </div>
                   </div>
-                ))}
-              </div>
-              <Button variant="amber-outline" className="self-start bg-background/60" asChild>
-                <Link to="/candles">
-                  Browse all cases
-                  <ArrowRight className="h-4 w-4" />
+
+                  <div className="p-[14px]">
+                    <div className="text-[12px] text-muted-foreground">
+                      {candle.category} • {candle.governorate}
+                    </div>
+                    <h3 className="mt-2 line-clamp-2 text-[15px] font-semibold leading-5 text-foreground">{candle.title}</h3>
+                    <p className="mt-2 line-clamp-2 text-[12px] leading-5 text-muted-foreground">{candle.story}</p>
+
+                    <div className="mt-4">
+                      <div className="flex items-end justify-between gap-3">
+                        <div className="text-[15px] font-bold text-foreground">
+                          {candle.fundedAmount.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })}
+                        </div>
+                        <div className="text-[12px] text-muted-foreground">
+                          of {candle.targetAmount.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })}
+                        </div>
+                      </div>
+                      <div className="mt-2 h-[5px] rounded-full bg-[#E7E5E4]">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${progress}%` }}
+                          viewport={{ once: true, amount: 0.6 }}
+                          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
+                          className={`h-[5px] rounded-full ${ui.progress}`}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-between gap-3 text-[12px] text-muted-foreground">
+                      <span className={`inline-flex items-center gap-1.5 ${daysLeft <= 3 ? "font-bold text-[#A32D2D]" : ""}`}>
+                        <TimerReset className="h-3.5 w-3.5" />
+                        {daysLeft} days left
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Users className="h-3.5 w-3.5" />
+                        {donorCount} donors
+                      </span>
+                    </div>
+
+                    <div className="mt-4 flex items-center">
+                      {(donorInitials[index % donorInitials.length] ?? ["AA", "BB", "CC"]).map((initials, avatarIndex) => (
+                        <div
+                          key={`${candle.id}-${initials}`}
+                          className={`flex h-5 w-5 items-center justify-center rounded-full border border-white bg-[#D9E2EC] text-[9px] font-semibold text-[#17212B] ${avatarIndex > 0 ? "-ml-1.5" : ""}`}
+                        >
+                          {initials}
+                        </div>
+                      ))}
+                    </div>
+
+                    <motion.div
+                      whileHover={{ scale: 1.01 }}
+                      transition={{ duration: 0.18, ease: "easeOut" }}
+                      className={`mt-4 rounded-[12px] px-3 py-[9px] text-center text-[12px] font-semibold shadow-[0_10px_22px_rgba(23,33,43,0.12)] ${ui.button}`}
+                    >
+                      {ctaText}
+                    </motion.div>
+                  </div>
                 </Link>
-              </Button>
-            </div>
-          </motion.div>
-
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="whileInView"
-            viewport={{ once: true, amount: 0.1 }}
-            className="grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(22rem,0.75fr)]"
-          >
-            <motion.div variants={staggerItem} className="space-y-5">
-              <div className="flex items-center justify-between rounded-[26px] border border-amber/20 bg-[linear-gradient(135deg,rgba(245,179,65,0.14),rgba(255,255,255,0.72))] px-5 py-4">
-                <div>
-                  <div
-                    className="text-[10px] font-bold uppercase tracking-[0.24em]"
-                    style={{ color: "hsl(var(--amber-dark) / 0.8)" }}
-                  >
-                    Lead priority
-                  </div>
-                  <div className="mt-1 text-sm font-semibold text-foreground">Best next action for first-time donors</div>
-                </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/75 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-foreground/70">
-                  <Flame className="h-3.5 w-3.5 text-amber" />
-                  Live now
-                </div>
-              </div>
-              <CandleCard candle={mockCandles[0]} variant="featured" />
-            </motion.div>
-
-            <motion.div variants={staggerItem} className="flex h-full flex-col gap-4 rounded-[32px] border border-white/60 bg-white/55 p-4 shadow-[0_20px_60px_rgba(28,43,64,0.05)] backdrop-blur-xl md:p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">Next in line</div>
-                  <h3 className="mt-2 font-heading text-[1.75rem] font-bold tracking-tight text-foreground">Compare by need, not by guesswork.</h3>
-                </div>
-                <div className="hidden rounded-full border border-border/60 bg-background/80 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground md:block">
-                  3 cases
-                </div>
-              </div>
-
-              <div className="grid gap-4">
-                {mockCandles.slice(1, 4).map((candle) => (
-                  <CandleCard key={candle.id} candle={candle} variant="compact" />
-                ))}
-              </div>
-
-              <div className="rounded-[28px] border border-dashed border-amber/35 bg-[linear-gradient(180deg,rgba(245,179,65,0.08),rgba(255,255,255,0.7))] p-5">
-                <p className="text-[14px] leading-7 text-muted-foreground">
-                  Can&apos;t choose one case? The general fund routes support to the most time-sensitive verified requests without slowing down delivery.
-                </p>
-                <Button variant="amber" size="lg" className="mt-4 w-full sm:w-auto">
-                  Donate to General Fund
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
+              </motion.article>
+            );
+          })}
+        </motion.div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const HowItWorks = () => (
   <section id="how-it-works" className="section-shell uniform-section px-4 md:px-6">

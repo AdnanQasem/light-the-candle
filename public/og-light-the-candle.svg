@@ -1,0 +1,36 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="112" y1="72" x2="1010" y2="566" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#101922"/>
+      <stop offset="0.55" stop-color="#1B2631"/>
+      <stop offset="1" stop-color="#F1D19C"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(835 275) rotate(90) scale(210 220)">
+      <stop stop-color="#FFD27A" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#FFD27A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="candle" x1="811" y1="214" x2="811" y2="476" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F5E8D0"/>
+      <stop offset="1" stop-color="#D0B894"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="32" fill="url(#bg)"/>
+  <circle cx="872" cy="284" r="226" fill="url(#glow)"/>
+  <path d="M830 186C853 214 858 245 835 277C822 295 804 307 792 327C777 351 778 381 812 398C844 383 854 356 846 330C840 311 825 296 821 279C815 254 822 222 830 186Z" fill="#FFD36A"/>
+  <rect x="779" y="332" width="66" height="170" rx="22" fill="url(#candle)"/>
+  <rect x="807" y="305" width="8" height="34" rx="4" fill="#2E2A26"/>
+  <path d="M0 490C170 446 272 440 412 474C518 500 589 539 702 561C844 589 976 565 1200 492V630H0V490Z" fill="#F8F2E9" fill-opacity="0.88"/>
+  <g opacity="0.78">
+    <path d="M123 128H375" stroke="#C98C50" stroke-width="3" stroke-linecap="round"/>
+    <path d="M123 153H322" stroke="#C98C50" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <text x="120" y="264" fill="#FFF9F1" font-family="Manrope, Segoe UI, sans-serif" font-size="74" font-weight="800" letter-spacing="-1.5">
+    Light The Candle
+  </text>
+  <text x="120" y="332" fill="#E8DCCB" font-family="Manrope, Segoe UI, sans-serif" font-size="30" font-weight="600">
+    Urgent aid cases in Gaza
+  </text>
+  <text x="120" y="382" fill="#D4C6B2" font-family="Manrope, Segoe UI, sans-serif" font-size="24" font-weight="500">
+    Verified needs. Serious urgency. A path from darkness to help.
+  </text>
+</svg>

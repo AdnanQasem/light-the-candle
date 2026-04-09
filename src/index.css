@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,74 +6,75 @@
 
 @layer base {
   :root {
-    --background: 35 38% 95%;
-    --foreground: 215 26% 14%;
+    --background: 34 29% 95%;
+    --foreground: 212 28% 13%;
 
-    --card: 36 35% 97%;
-    --card-foreground: 215 26% 14%;
+    --card: 35 44% 98%;
+    --card-foreground: 212 28% 13%;
 
-    --popover: 36 35% 97%;
-    --popover-foreground: 215 26% 14%;
+    --popover: 35 44% 98%;
+    --popover-foreground: 212 28% 13%;
 
-    --primary: 214 34% 14%;
-    --primary-foreground: 36 44% 95%;
+    --primary: 212 28% 13%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 33 30% 90%;
-    --secondary-foreground: 215 26% 18%;
+    --secondary: 35 18% 90%;
+    --secondary-foreground: 212 22% 18%;
 
-    --muted: 34 24% 90%;
-    --muted-foreground: 215 10% 38%;
+    --muted: 35 18% 91%;
+    --muted-foreground: 215 12% 40%;
 
-    --accent: 34 92% 58%;
-    --accent-foreground: 214 34% 12%;
+    --accent: 22 84% 43%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 58% 52%;
+    --destructive: 3 74% 41%;
     --destructive-foreground: 0 0% 98%;
 
-    --success: 154 41% 38%;
+    --success: 159 84% 26%;
     --success-foreground: 0 0% 100%;
 
-    --urgent: 7 74% 56%;
+    --urgent: 4 72% 42%;
     --urgent-foreground: 0 0% 100%;
 
-    --amber: 34 92% 58%;
-    --amber-dark: 34 94% 35%;
-    --amber-foreground: 214 34% 12%;
-    --amber-glow: 39 96% 70%;
+    --amber: 22 84% 43%;
+    --amber-dark: 16 78% 32%;
+    --amber-foreground: 0 0% 100%;
+    --amber-glow: 28 77% 63%;
 
-    --gold: 45 74% 58%;
-    --gold-light: 47 88% 78%;
+    --gold: 38 68% 46%;
+    --gold-light: 40 72% 76%;
 
-    --sand: 36 28% 92%;
-    --warm-gray: 32 8% 68%;
+    --sand: 34 24% 91%;
+    --warm-gray: 30 8% 60%;
 
-    --border: 33 23% 84%;
-    --input: 33 23% 84%;
-    --ring: 34 92% 58%;
+    --border: 32 18% 80%;
+    --input: 32 18% 80%;
+    --ring: 22 84% 43%;
 
     --radius: 1rem;
 
-    --gradient-hero: linear-gradient(145deg, hsl(214 38% 11%) 0%, hsl(214 30% 17%) 42%, hsl(20 33% 18%) 100%);
-    --gradient-amber: linear-gradient(135deg, hsl(31 94% 60%) 0%, hsl(44 82% 66%) 100%);
-    --gradient-warm: linear-gradient(180deg, hsl(35 38% 96%) 0%, hsl(35 32% 92%) 100%);
-    --gradient-panel: linear-gradient(180deg, hsl(36 35% 98% / 0.92) 0%, hsl(35 30% 94% / 0.84) 100%);
+    --gradient-hero: linear-gradient(145deg, hsl(212 34% 10%) 0%, hsl(214 26% 16%) 48%, hsl(16 27% 18%) 100%);
+    --gradient-amber: linear-gradient(135deg, hsl(19 81% 45%) 0%, hsl(35 77% 58%) 100%);
+    --gradient-warm: linear-gradient(180deg, hsl(35 38% 97%) 0%, hsl(35 28% 92%) 100%);
+    --gradient-panel: linear-gradient(180deg, hsl(35 40% 98% / 0.94) 0%, hsl(35 24% 93% / 0.9) 100%);
 
-    --shadow-candle: 0 0 32px hsl(34 92% 58% / 0.32);
-    --shadow-candle-lg: 0 0 60px hsl(34 92% 58% / 0.2), 0 24px 80px hsl(24 40% 22% / 0.22);
-    --shadow-card: 0 20px 50px hsl(214 24% 12% / 0.08);
-    --shadow-card-hover: 0 24px 70px hsl(214 24% 12% / 0.14);
+    --shadow-candle: 0 0 28px hsl(22 84% 43% / 0.24);
+    --shadow-candle-lg: 0 0 56px hsl(22 84% 43% / 0.16), 0 24px 80px hsl(20 30% 18% / 0.18);
+    --shadow-card: 0 18px 42px hsl(212 28% 13% / 0.08);
+    --shadow-card-hover: 0 24px 54px hsl(212 28% 13% / 0.12);
 
-    --sidebar-background: 214 34% 12%;
-    --sidebar-foreground: 36 44% 95%;
-    --sidebar-primary: 34 92% 58%;
-    --sidebar-primary-foreground: 214 34% 12%;
+    --sidebar-background: 212 28% 13%;
+    --sidebar-foreground: 35 40% 96%;
+    --sidebar-primary: 22 84% 43%;
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 214 22% 19%;
-    --sidebar-accent-foreground: 36 44% 95%;
+    --sidebar-accent-foreground: 35 40% 96%;
     --sidebar-border: 214 20% 23%;
-    --sidebar-ring: 34 92% 58%;
+    --sidebar-ring: 22 84% 43%;
 
-    --font-heading: 'Playfair Display', serif;
-    --font-body: 'Playfair Display', serif;
+    --font-heading: "Manrope", "Segoe UI", sans-serif;
+    --font-body: "Manrope", "Segoe UI", sans-serif;
+    --font-arabic: "IBM Plex Sans Arabic", "Tahoma", sans-serif;
   }
 
   .dark {
@@ -116,14 +117,22 @@
     scroll-behavior: smooth;
   }
 
+  html[lang="ar"] {
+    font-size: 17px;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     background-image:
-      radial-gradient(circle at top left, hsl(42 84% 74% / 0.24), transparent 28%),
-      radial-gradient(circle at top right, hsl(14 61% 65% / 0.12), transparent 24%),
-      linear-gradient(180deg, hsl(var(--background)), hsl(35 30% 92%));
+      radial-gradient(circle at top left, hsl(28 78% 68% / 0.12), transparent 28%),
+      radial-gradient(circle at top right, hsl(4 58% 58% / 0.08), transparent 24%),
+      linear-gradient(180deg, hsl(var(--background)), hsl(35 24% 92%));
     font-family: var(--font-body);
     min-height: 100vh;
+  }
+
+  html[lang="ar"] body {
+    font-family: var(--font-arabic);
   }
 
   body::before {
@@ -146,12 +155,22 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
     line-height: 1.1;
   }
 
+  html[lang="ar"] h1,
+  html[lang="ar"] h2,
+  html[lang="ar"] h3,
+  html[lang="ar"] h4,
+  html[lang="ar"] h5,
+  html[lang="ar"] h6 {
+    font-family: var(--font-arabic);
+    letter-spacing: 0;
+  }
+
   ::selection {
-    background: hsl(34 92% 58% / 0.22);
+    background: hsl(22 84% 43% / 0.22);
   }
 }
 
@@ -319,7 +338,7 @@
   }
   70% {
     box-shadow: 0 0 14px hsl(34 92% 58% / 0.18), 0 12px 26px hsl(34 92% 58% / 0.14);
-    filter: brightness(0.98);
+    filter: brightness(0.99);
   }
 }
 

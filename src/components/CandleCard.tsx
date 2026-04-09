@@ -1,18 +1,21 @@
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { ArrowRight, Clock, Flame, Heart, MapPin, ShieldCheck, Users } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { ArrowRight, MapPin, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatCurrency, useLocale } from "@/lib/locale";
 
 export interface CandleData {
   id: string;
   title: string;
+  titleAr?: string;
   story: string;
+  storyAr?: string;
   image: string;
   category: string;
-  urgency: "critical" | "high" | "medium";
+  categoryAr?: string;
+  urgency: "critical" | "high" | "medium" | "low";
   governorate: string;
+  governorateAr?: string;
   targetAmount: number;
   fundedAmount: number;
   isVerified: boolean;
@@ -21,10 +24,31 @@ export interface CandleData {
   daysLeft?: number;
 }
 
-const urgencyStyles: Record<CandleData["urgency"], string> = {
-  critical: "bg-urgent text-urgent-foreground",
-  high: "bg-amber text-amber-foreground",
-  medium: "bg-secondary text-secondary-foreground",
+const urgencyStyles: Record<CandleData["urgency"], { bar: string; badge: string; track: string; fill: string }> = {
+  critical: {
+    bar: "bg-[#B42318]",
+    badge: "bg-[#FEE4E2] text-[#B42318]",
+    track: "bg-[#F4D6D4]",
+    fill: "bg-[#B42318]",
+  },
+  high: {
+    bar: "bg-[#C2410C]",
+    badge: "bg-[#FFEDD5] text-[#9A3412]",
+    track: "bg-[#F3DDCF]",
+    fill: "bg-[#C2410C]",
+  },
+  medium: {
+    bar: "bg-[#B54708]",
+    badge: "bg-[#FEF0C7] text-[#92400E]",
+    track: "bg-[#F0E0B7]",
+    fill: "bg-[#B54708]",
+  },
+  low: {
+    bar: "bg-[#166534]",
+    badge: "bg-[#DCFCE7] text-[#166534]",
+    track: "bg-[#D1E7D6]",
+    fill: "bg-[#166534]",
+  },
 };
 
 const CandleCard = ({
@@ -34,157 +58,173 @@ const CandleCard = ({
   candle: CandleData;
   variant?: "default" | "featured" | "compact";
 }) => {
+  const { locale, dir } = useLocale();
   const progress = Math.min((candle.fundedAmount / candle.targetAmount) * 100, 100);
   const remaining = Math.max(candle.targetAmount - candle.fundedAmount, 0);
-  const donorCount = candle.donorCount ?? Math.max(Math.round(candle.fundedAmount / 45), 12);
-  const daysLeft = candle.daysLeft ?? (candle.isFulfilled ? 0 : Math.max(3, 18 - Number(candle.id)));
-  const isFeatured = variant === "featured";
   const isCompact = variant === "compact";
+  const isFeatured = variant === "featured";
+  const localizedTitle = locale === "ar" ? candle.titleAr ?? candle.title : candle.title;
+  const localizedStory = locale === "ar" ? candle.storyAr ?? candle.story : candle.story;
+  const localizedGovernorate = locale === "ar" ? candle.governorateAr ?? candle.governorate : candle.governorate;
+
+  const copy =
+    locale === "ar"
+      ? {
+          urgency: {
+            critical: "حرج",
+            high: "عالٍ",
+            medium: "متوسط",
+            low: "منخفض",
+          },
+          verified: "موثقة",
+          trusted: "شريك موثوق",
+          location: "الموقع",
+          funded: "تم جمعه",
+          target: "الهدف",
+          fundedPct: "ممولة",
+          left: "متبقي",
+          donate: "ساعد الآن",
+          donateCompact: "تبرع",
+          completed: "مكتملة",
+          open: "نشطة",
+        }
+      : {
+          urgency: {
+            critical: "Critical",
+            high: "High",
+            medium: "Medium",
+            low: "Low",
+          },
+          verified: "Verified",
+          trusted: "Trusted partner",
+          location: "Location",
+          funded: "Funded",
+          target: "Target",
+          fundedPct: "funded",
+          left: "left",
+          donate: "Help Now",
+          donateCompact: "Donate",
+          completed: "Completed",
+          open: "Open",
+        };
+
+  const style = urgencyStyles[candle.urgency];
 
   return (
-    <motion.div
-      whileHover={{ y: -8 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className={cn(isFeatured && "md:col-span-2 md:row-span-2")}
-    >
+    <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.22, ease: "easeOut" }}>
       <Link
         to={`/candles/${candle.id}`}
         className={cn(
-          "group block h-full overflow-hidden border border-white/50 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(247,240,230,0.9))] shadow-card transition-shadow duration-500 hover:shadow-card-hover",
-          isCompact ? "rounded-[28px]" : "rounded-[24px]",
+          "group relative flex h-full flex-col overflow-hidden rounded-[28px] border border-border/80 bg-[linear-gradient(180deg,#fffdf9_0%,#f4efe7_100%)] shadow-[0_10px_28px_rgba(15,23,42,0.08)] transition-[transform,box-shadow] duration-300 hover:shadow-[0_18px_38px_rgba(15,23,42,0.12)]",
+          isCompact && "rounded-[24px]",
         )}
+        dir={dir}
       >
-        <div className={cn("relative overflow-hidden", isFeatured ? "h-64 lg:h-80" : isCompact ? "h-52" : "h-48")}>
+        <div className={cn("h-1.5 w-full", style.bar)} />
+
+        <div
+          className={cn(
+            "relative overflow-hidden border-b border-white/55",
+            isFeatured ? "aspect-[16/9]" : isCompact ? "aspect-[16/8.5]" : "aspect-[16/9.25]",
+          )}
+        >
           <img
             src={candle.image}
-            alt={candle.title}
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            alt={localizedTitle}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/10 to-transparent" />
-          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/20 to-transparent" />
-
-          <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-            <Badge className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.22em] ${urgencyStyles[candle.urgency]}`}>
-              <Clock className="mr-1.5 h-3 w-3" />
-              {candle.urgency}
-            </Badge>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#17212B]/72 via-[#17212B]/18 to-transparent" />
+          <div className="absolute inset-x-4 bottom-4 flex items-center justify-between gap-3 text-white">
+            <span className="rounded-full bg-black/24 px-3 py-1 text-[11px] font-semibold backdrop-blur-sm">
+              {localizedGovernorate}
+            </span>
             {candle.isVerified && (
-              <Badge className="rounded-full bg-white/85 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-foreground backdrop-blur-sm">
-                <ShieldCheck className="mr-1.5 h-3 w-3 text-success" />
-                Verified
-              </Badge>
-            )}
-          </div>
-
-          {candle.isFulfilled && (
-            <div className="absolute inset-0 flex items-center justify-center bg-success/18 backdrop-blur-[2px]">
-              <span className="rounded-full bg-success px-5 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-success-foreground shadow-lg">
-                Candle Lit
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/88 px-3 py-1 text-[11px] font-semibold text-[#027A48]">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                {copy.verified}
               </span>
-            </div>
-          )}
-
-          <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
-            <div>
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary-foreground/86 backdrop-blur-sm">
-                <Flame className="h-3 w-3 text-amber" />
-                {candle.category}
-              </div>
-              <div className="flex items-center gap-1.5 text-sm text-primary-foreground/80">
-                <MapPin className="h-3.5 w-3.5 text-amber" />
-                {candle.governorate}
-              </div>
-            </div>
-
-            <div className="rounded-full bg-white/12 p-3 text-primary-foreground backdrop-blur-sm transition-colors duration-300 group-hover:bg-amber group-hover:text-amber-foreground">
-              <Heart className="h-4 w-4" />
-            </div>
+            )}
           </div>
         </div>
 
-        <div className={cn("space-y-4 p-4.5", isFeatured && "p-5 lg:p-6", isCompact && "space-y-5 p-5")}>
-          <div>
+        <div className={cn("flex h-full flex-col space-y-4 p-4", isCompact ? "p-4" : "p-5", isFeatured && "p-6")}>
+          <header className="flex items-start justify-between gap-3">
+            <span className={cn("inline-flex min-h-8 items-center rounded-full px-3 text-[11px] font-bold", style.badge)}>
+              {copy.urgency[candle.urgency]}
+            </span>
+
+            <span className="text-xs font-medium text-[#475467]">{candle.isVerified ? copy.trusted : copy.open}</span>
+          </header>
+
+          <div className="space-y-2">
             <h3
               className={cn(
-                "font-heading font-bold leading-snug text-card-foreground transition-colors duration-300 group-hover:text-amber",
-                isFeatured ? "text-2xl lg:text-[1.95rem]" : isCompact ? "text-[1.35rem] leading-[1.18]" : "text-xl",
+                "line-clamp-2 text-start font-semibold leading-[1.35] text-card-foreground",
+                isFeatured ? "text-2xl" : isCompact ? "text-[1.02rem]" : "text-[1.15rem]",
               )}
             >
-              {candle.title}
+              {localizedTitle}
             </h3>
-            <p
-              className={cn(
-                "mt-2 leading-relaxed text-muted-foreground",
-                isFeatured ? "line-clamp-3 text-[14px] lg:text-[15px]" : isCompact ? "line-clamp-3 text-[13.5px]" : "line-clamp-2 text-[13px]",
-              )}
-            >
-              {candle.story}
+            <p className={cn("line-clamp-2 text-start text-sm leading-6 text-muted-foreground", isCompact && "text-[13px]")}>
+              {localizedStory}
             </p>
           </div>
 
-          <div className={cn("rounded-[24px] bg-background/80 p-4", isCompact && "rounded-[26px] border border-border/40 bg-background/85")}>
-            <div className="mb-3 flex items-end justify-between gap-3">
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70">Raised</div>
-                <div className="font-heading text-2xl font-bold text-card-foreground">
-                  ${candle.fundedAmount.toLocaleString()}
-                </div>
-              </div>
-              <div className="text-right text-[11px] font-medium text-muted-foreground/80">
-                <div>Goal ${candle.targetAmount.toLocaleString()}</div>
-                <div>${remaining.toLocaleString()} left</div>
-              </div>
-            </div>
-
-            <Progress value={progress} className="h-2.5 overflow-hidden rounded-full bg-secondary" />
-
-            <div className="mt-3 flex items-center justify-between text-sm">
-              <span className="font-semibold text-foreground">{Math.round(progress)}% funded</span>
-              <span className="text-muted-foreground">{candle.isFulfilled ? "Completed" : "Open case"}</span>
-            </div>
+          <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="h-4 w-4 text-[#7A271A]" />
+              <span className="font-medium">{localizedGovernorate}</span>
+            </span>
+            <span className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+              {candle.category}
+            </span>
           </div>
 
-          {isCompact ? (
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="rounded-2xl border border-border/45 bg-white/55 px-4 py-3 text-center">
-                <div className="inline-flex items-center gap-2 text-muted-foreground">
-                  <Users className="h-4 w-4" />
-                  {donorCount} donors
+          <section className="rounded-[22px] border border-white/60 bg-white/72 p-4">
+            <div className="mb-3 flex items-end justify-between gap-3">
+              <div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{copy.funded}</div>
+                <div className={cn("mt-1 font-semibold text-card-foreground", isFeatured ? "text-3xl" : "text-2xl")}>
+                  {formatCurrency(candle.fundedAmount, locale)}
                 </div>
               </div>
-              <div className="rounded-2xl border border-border/45 bg-white/55 px-4 py-3 text-center">
-                <div className="inline-flex items-center gap-2 text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  {daysLeft} days left
-                </div>
+              <div className="text-start text-sm text-muted-foreground">
+                <div>{copy.target}: {formatCurrency(candle.targetAmount, locale)}</div>
+                <div>{formatCurrency(remaining, locale)} {copy.left}</div>
               </div>
             </div>
-          ) : (
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                {donorCount} donors
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                {daysLeft} days left
-              </span>
-            </div>
-          )}
 
-          <div
-            className={cn(
-              "flex items-center justify-between rounded-full px-4 py-3 text-sm font-semibold transition-colors duration-300",
-              candle.isFulfilled
-                ? "border border-border/70 bg-background/70 text-foreground group-hover:border-amber/40 group-hover:bg-amber/5"
-                : "bg-gradient-to-r from-amber to-[hsl(45_82%_66%)] text-amber-foreground shadow-lg shadow-amber/20",
-            )}
-          >
-            <span>{candle.isFulfilled ? "View fulfillment update" : "Light this candle"}</span>
-            <span className="inline-flex items-center gap-2 text-xs sm:text-sm">
-              {candle.isFulfilled ? "See proof" : `$${remaining.toLocaleString()} needed`}
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            <div className={cn("h-2.5 overflow-hidden rounded-full", style.track)}>
+              <div
+                className={cn("h-full rounded-full transition-[width] duration-500", style.fill)}
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+
+            <div className="mt-3 flex items-center justify-between text-sm">
+              <span className="font-semibold text-foreground">
+                {Math.round(progress)}% {copy.fundedPct}
+              </span>
+              <span className="text-muted-foreground">{candle.isFulfilled ? copy.completed : copy.open}</span>
+            </div>
+          </section>
+
+          <div className="mt-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-sm text-muted-foreground">
+              {copy.location}: {localizedGovernorate}
+            </span>
+
+            <span
+              className={cn(
+                "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors",
+                candle.isFulfilled
+                  ? "border border-border bg-background text-foreground"
+                  : "bg-primary text-primary-foreground group-hover:bg-[#101A25]",
+              )}
+            >
+              {isCompact ? copy.donateCompact : copy.donate}
+              <ArrowRight className={cn("h-4 w-4 transition-transform duration-300", locale === "ar" ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1")} />
             </span>
           </div>
         </div>
