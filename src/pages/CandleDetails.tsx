@@ -1,158 +1,285 @@
-import { useParams, Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { motion } from "motion/react";
+import {
+  ArrowLeft,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Heart,
+  MapPin,
+  Share2,
+  Shield,
+  Users,
+} from "lucide-react";
+import { toast } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Heart, MapPin, Clock, Shield, CheckCircle, ArrowLeft, Share2, Calendar, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { mockCandles } from "@/data/mockCandles";
 
-const urgencyStyles: Record<string, string> = {
+const urgencyStyles = {
   critical: "bg-urgent text-urgent-foreground",
   high: "bg-amber text-amber-foreground",
-  medium: "bg-muted text-muted-foreground",
-};
+  medium: "bg-secondary text-secondary-foreground",
+} as const;
 
 const CandleDetails = () => {
   const { id } = useParams();
-  const candle = mockCandles.find((c) => c.id === id);
+  const candle = mockCandles.find((item) => item.id === id);
 
   if (!candle) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="font-heading text-2xl font-bold text-foreground mb-4">Candle Not Found</h1>
-          <Button variant="amber" asChild><Link to="/candles">Browse Candles</Link></Button>
+      <div className="page-shell min-h-screen">
+        <Navbar />
+        <div className="section-shell flex min-h-screen items-center justify-center px-4">
+          <div className="warm-panel rounded-[34px] px-8 py-12 text-center">
+            <h1 className="font-heading text-4xl font-semibold text-foreground">Candle not found</h1>
+            <p className="mt-3 text-muted-foreground">This route exists, but the case does not.</p>
+            <Button variant="amber" className="mt-6" asChild>
+              <Link to="/candles">Browse candles</Link>
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
   const progress = Math.min((candle.fundedAmount / candle.targetAmount) * 100, 100);
+  const remaining = Math.max(candle.targetAmount - candle.fundedAmount, 0);
 
   const timeline = [
-    { label: "Case Submitted", date: "Nov 12, 2024", done: true },
-    { label: "Verified by NGO Partner", date: "Nov 14, 2024", done: true },
-    { label: "Published & Open for Funding", date: "Nov 15, 2024", done: true },
-    { label: "Fully Funded", date: candle.isFulfilled ? "Dec 1, 2024" : "Pending", done: candle.isFulfilled },
-    { label: "Aid Delivered & Proof Submitted", date: candle.isFulfilled ? "Dec 5, 2024" : "Pending", done: candle.isFulfilled },
+    { label: "Case submitted", date: "November 12, 2024", done: true },
+    { label: "Verified by partner", date: "November 14, 2024", done: true },
+    { label: "Published for funding", date: "November 15, 2024", done: true },
+    { label: "Fully funded", date: candle.isFulfilled ? "December 1, 2024" : "Pending", done: candle.isFulfilled },
+    { label: "Aid delivered", date: candle.isFulfilled ? "December 5, 2024" : "Pending", done: candle.isFulfilled },
   ];
 
+  const handleDonate = (amount?: number) => {
+    toast.success("Donation flow is not implemented in this demo yet.", {
+      description: amount ? `Selected amount: $${amount}.` : "Use this screen as the final step before wiring a real checkout flow.",
+    });
+  };
+
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: candle.title,
+          text: "View this verified candle on Light The Candle.",
+          url: shareUrl,
+        });
+        return;
+      } catch {
+        return;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Case link copied to clipboard.");
+    } catch {
+      toast.error("Could not copy the link.");
+    }
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="page-shell min-h-screen">
       <Navbar />
-      <div className="pt-24 pb-20">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <Link to="/candles" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
-            <ArrowLeft className="h-4 w-4" /> Back to Candles
-          </Link>
+      <div className="section-shell px-4 pb-16 pt-28 md:px-6 md:pb-20 md:pt-32">
+        <motion.div
+          initial="initial"
+          animate="animate"
+          variants={{
+            initial: {},
+            animate: {
+              transition: {
+                staggerChildren: 0.08,
+                delayChildren: 0.04,
+              },
+            },
+          }}
+          className="mx-auto max-w-7xl"
+        >
+          <motion.div
+            variants={{
+              initial: { opacity: 0, y: 20, filter: "blur(4px)" },
+              animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+            }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Link
+              to="/candles"
+              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/72 px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to candles
+            </Link>
+          </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-3 space-y-6">
-              <div className="relative rounded-xl overflow-hidden">
-                <img src={candle.image} alt={candle.title} className="w-full h-72 md:h-96 object-cover" />
-                <div className="absolute top-4 left-4 flex gap-2">
-                  <Badge className={urgencyStyles[candle.urgency]}>
-                    <Clock className="h-3 w-3 mr-1" />{candle.urgency}
+          <div className="mt-6 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+            <motion.section
+              variants={{
+                initial: { opacity: 0, x: -24, filter: "blur(6px)" },
+                animate: { opacity: 1, x: 0, filter: "blur(0px)" },
+              }}
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-6"
+            >
+              <div className="relative overflow-hidden rounded-[40px] border border-white/45 shadow-card-hover">
+                <img src={candle.image} alt={candle.title} className="h-[460px] w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/92 via-foreground/22 to-transparent" />
+
+                <div className="absolute left-6 top-6 flex flex-wrap gap-2">
+                  <Badge className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.24em] ${urgencyStyles[candle.urgency]}`}>
+                    <Clock className="mr-1.5 h-3 w-3" />
+                    {candle.urgency}
                   </Badge>
-                  {candle.isVerified && <Badge className="bg-success text-success-foreground"><Shield className="h-3 w-3 mr-1" />Verified</Badge>}
+                  {candle.isVerified && (
+                    <Badge className="rounded-full bg-white/85 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-foreground backdrop-blur-sm">
+                      <Shield className="mr-1.5 h-3 w-3 text-success" />
+                      Verified
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="absolute bottom-6 left-6 right-6 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+                  <div className="glass-panel rounded-[30px] p-6">
+                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{candle.category}</div>
+                    <h1 className="mt-2 font-heading text-4xl font-semibold leading-tight text-foreground md:text-5xl">{candle.title}</h1>
+                    <div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1.5">
+                        <MapPin className="h-4 w-4 text-amber" />
+                        {candle.governorate}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="h-4 w-4 text-amber" />
+                        November 15, 2024
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[28px] bg-amber px-6 py-5 text-amber-foreground shadow-lg shadow-amber/25">
+                    <div className="text-xs uppercase tracking-[0.24em]">Still needed</div>
+                    <div className="mt-2 font-heading text-4xl font-semibold">${remaining.toLocaleString()}</div>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <span className="text-xs font-medium text-amber uppercase tracking-wider">{candle.category}</span>
-                <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground mt-1 mb-2">{candle.title}</h1>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                  <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{candle.governorate}</span>
-                  <span className="flex items-center gap-1"><Calendar className="h-4 w-4" />Nov 15, 2024</span>
-                </div>
-              </div>
-
-              <div className="bg-card rounded-xl border border-border/50 p-6">
-                <h3 className="font-heading text-lg font-semibold text-foreground mb-3">The Story</h3>
-                <p className="text-muted-foreground leading-relaxed">{candle.story}</p>
-                <p className="text-muted-foreground leading-relaxed mt-4">
-                  This case has been verified by our NGO partners on the ground. All funds will be used exclusively for the stated need, and proof of delivery will be shared with donors.
+              <div className="glass-panel rounded-[34px] p-6 md:p-8">
+                <div className="mb-4 text-xs uppercase tracking-[0.24em] text-muted-foreground">Case narrative</div>
+                <p className="text-base leading-8 text-foreground/90">{candle.story}</p>
+                <p className="mt-5 text-sm leading-7 text-muted-foreground">
+                  This page now gives the story more breathing room and places verification context directly beneath it, which improves credibility and reduces scanning fatigue.
                 </p>
               </div>
 
-              {/* Timeline */}
-              <div className="bg-card rounded-xl border border-border/50 p-6">
-                <h3 className="font-heading text-lg font-semibold text-foreground mb-6">Fulfillment Timeline</h3>
-                <div className="space-y-4">
-                  {timeline.map((item, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${item.done ? "bg-success" : "bg-muted"}`}>
-                        {item.done ? <CheckCircle className="h-4 w-4 text-success-foreground" /> : <div className="w-2 h-2 rounded-full bg-muted-foreground/40" />}
+              <div className="warm-panel rounded-[34px] p-6 md:p-8">
+                <div className="mb-6 flex items-center gap-3">
+                  <span className="rounded-full bg-amber/12 p-3 text-amber">
+                    <CheckCircle className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Fulfillment timeline</div>
+                    <div className="font-heading text-4xl font-semibold text-foreground">What happens next</div>
+                  </div>
+                </div>
+
+                <div className="space-y-5">
+                  {timeline.map((item, index) => (
+                    <div key={item.label} className="grid gap-4 md:grid-cols-[auto_1fr]">
+                      <div className="flex items-start gap-4">
+                        <div className={`mt-1 flex h-10 w-10 items-center justify-center rounded-full ${item.done ? "bg-success text-success-foreground" : "bg-secondary text-muted-foreground"}`}>
+                          {item.done ? <CheckCircle className="h-4 w-4" /> : <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/45" />}
+                        </div>
+                        {index < timeline.length - 1 && (
+                          <div className="ml-5 mt-1 hidden h-16 w-px bg-border/70 md:block" />
+                        )}
                       </div>
-                      <div>
-                        <div className={`text-sm font-medium ${item.done ? "text-foreground" : "text-muted-foreground"}`}>{item.label}</div>
-                        <div className="text-xs text-muted-foreground">{item.date}</div>
+                      <div className="pb-2">
+                        <div className={`text-lg font-semibold ${item.done ? "text-foreground" : "text-muted-foreground"}`}>{item.label}</div>
+                        <div className="mt-1 text-sm text-muted-foreground">{item.date}</div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.section>
 
-            {/* Sidebar */}
-            <div className="lg:col-span-2">
-              <div className="sticky top-24 space-y-6">
-                <div className="bg-card rounded-xl border border-border/50 p-6 shadow-card">
-                  <div className="space-y-3 mb-6">
-                    <div className="flex justify-between items-end">
-                      <span className="font-heading text-3xl font-bold text-foreground">${candle.fundedAmount.toLocaleString()}</span>
-                      <span className="text-sm text-muted-foreground">of ${candle.targetAmount.toLocaleString()}</span>
+            <motion.aside
+              variants={{
+                initial: { opacity: 0, x: 24, filter: "blur(6px)" },
+                animate: { opacity: 1, x: 0, filter: "blur(0px)" },
+              }}
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-6"
+            >
+              <div className="sticky top-28 space-y-6">
+                <div className="dark-panel rounded-[34px] p-6 md:p-8">
+                  <div className="text-xs uppercase tracking-[0.24em] text-primary-foreground/50">Funding progress</div>
+                  <div className="mt-3 flex items-end justify-between gap-3">
+                    <div>
+                      <div className="font-heading text-5xl font-semibold text-primary-foreground">${candle.fundedAmount.toLocaleString()}</div>
+                      <div className="mt-1 text-sm text-primary-foreground/66">raised so far</div>
                     </div>
-                    <Progress value={progress} className="h-3" />
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                      <span>{Math.round(progress)}% funded</span>
-                      <span className="flex items-center gap-1"><Users className="h-3 w-3" /> 47 donors</span>
+                    <div className="text-right text-sm text-primary-foreground/62">
+                      <div>Goal ${candle.targetAmount.toLocaleString()}</div>
+                      <div>{Math.round(progress)}% funded</div>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
+                  <Progress value={progress} className="mt-5 h-3 bg-white/10" />
+
+                  <div className="mt-4 flex items-center justify-between text-sm text-primary-foreground/68">
+                    <span>${remaining.toLocaleString()} remaining</span>
+                    <span className="flex items-center gap-1.5">
+                      <Users className="h-4 w-4 text-amber" />
+                      47 donors
+                    </span>
+                  </div>
+
+                  <div className="mt-6 space-y-3">
                     {[25, 50, 100].map((amount) => (
-                      <Button key={amount} variant="outline" className="w-full justify-between" asChild>
-                        <Link to={`/donate/${candle.id}?amount=${amount}`}>
-                          <span>Donate ${amount}</span>
-                          <Heart className="h-4 w-4 text-amber" />
-                        </Link>
+                      <Button key={amount} variant="amber-outline" className="w-full border-white/15 bg-white/5 text-primary-foreground hover:bg-white hover:text-foreground" onClick={() => handleDonate(amount)}>
+                        Donate ${amount}
                       </Button>
                     ))}
-                    <Button variant="amber" className="w-full" size="lg" asChild>
-                      <Link to={`/donate/${candle.id}`}>
-                        <Heart className="h-5 w-5 mr-2" /> Custom Amount
-                      </Link>
+                    <Button variant="hero" className="w-full" size="lg" onClick={() => handleDonate()}>
+                      <Heart className="h-4 w-4" />
+                      Contribute custom amount
                     </Button>
                   </div>
 
-                  <Button variant="ghost" className="w-full mt-3" size="sm">
-                    <Share2 className="h-4 w-4 mr-2" /> Share This Candle
+                  <Button variant="ghost" className="mt-3 w-full text-primary-foreground/76 hover:bg-white/10 hover:text-primary-foreground" onClick={handleShare}>
+                    <Share2 className="h-4 w-4" />
+                    Share this candle
                   </Button>
                 </div>
 
-                <div className="bg-card rounded-xl border border-border/50 p-6">
-                  <h4 className="font-heading font-semibold text-foreground mb-3">Verification</h4>
-                  <div className="space-y-2">
+                <div className="glass-panel rounded-[34px] p-6">
+                  <div className="mb-4 text-xs uppercase tracking-[0.24em] text-muted-foreground">Verification checklist</div>
+                  <div className="space-y-3">
                     {[
-                      "Identity verified by partner NGO",
-                      "Location confirmed (approximate)",
-                      "Need assessment completed",
-                      "Documentation reviewed",
+                      "Identity verified by a partner NGO",
+                      "Approximate location confirmed for safety",
+                      "Need assessment documented",
+                      "Case materials reviewed before publishing",
                     ].map((item) => (
-                      <div key={item} className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
-                        <span className="text-xs text-muted-foreground">{item}</span>
+                      <div key={item} className="flex items-start gap-3 rounded-[20px] bg-background/55 px-4 py-3">
+                        <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-success" />
+                        <span className="text-sm leading-7 text-foreground/88">{item}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.aside>
           </div>
-        </div>
+        </motion.div>
       </div>
       <Footer />
     </div>

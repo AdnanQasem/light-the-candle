@@ -13,6 +13,8 @@ export const mockCandles: CandleData[] = [
     fundedAmount: 1850,
     isVerified: true,
     isFulfilled: false,
+    donorCount: 49,
+    daysLeft: 5,
   },
   {
     id: "2",
@@ -26,6 +28,8 @@ export const mockCandles: CandleData[] = [
     fundedAmount: 720,
     isVerified: true,
     isFulfilled: false,
+    donorCount: 24,
+    daysLeft: 11,
   },
   {
     id: "3",
@@ -39,6 +43,8 @@ export const mockCandles: CandleData[] = [
     fundedAmount: 1200,
     isVerified: true,
     isFulfilled: true,
+    donorCount: 38,
+    daysLeft: 0,
   },
   {
     id: "4",
@@ -52,6 +58,8 @@ export const mockCandles: CandleData[] = [
     fundedAmount: 950,
     isVerified: true,
     isFulfilled: false,
+    donorCount: 31,
+    daysLeft: 4,
   },
   {
     id: "5",
@@ -65,6 +73,8 @@ export const mockCandles: CandleData[] = [
     fundedAmount: 2100,
     isVerified: true,
     isFulfilled: false,
+    donorCount: 58,
+    daysLeft: 13,
   },
   {
     id: "6",
@@ -78,5 +88,7 @@ export const mockCandles: CandleData[] = [
     fundedAmount: 3200,
     isVerified: true,
     isFulfilled: false,
+    donorCount: 74,
+    daysLeft: 7,
   },
 ];

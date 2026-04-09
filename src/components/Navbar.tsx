@@ -1,81 +1,113 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "motion/react";
+import { Heart, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import logoCandle from "@/assets/logo-candle.png";
+import BrandLogo from "@/components/BrandLogo";
+
+const navLinks = [
+  { href: "/candles", label: "Browse Candles" },
+  { href: "/#how-it-works", label: "How It Works" },
+  { href: "/#stories", label: "Our Impact" },
+  { href: "/#about", label: "About Us" },
+];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
 
-  const navLinks = [
-    { label: "Home", href: "/" },
-    { label: "Browse Candles", href: "/candles" },
-    { label: "How It Works", href: "/#how-it-works" },
-    { label: "About", href: "/#about" },
-  ];
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 16);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname, location.hash]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logoCandle} alt="Light The Candle" className="h-8 w-8" />
-          <span className="font-heading text-xl font-semibold tracking-tight text-foreground">
-            Light <span className="text-gradient-amber">The Candle</span>
-          </span>
-        </Link>
+    <header className="fixed left-0 right-0 top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
+      <motion.nav
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="container mx-auto px-4 lg:px-8"
+      >
+        <div className="flex h-16 items-center justify-between lg:h-20">
+          <Link to="/" className="group flex items-center">
+            <BrandLogo size="md" />
+          </Link>
 
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              to={link.href}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
+          <div className="hidden items-center gap-8 lg:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className="group relative text-sm font-medium text-foreground/80 transition-colors hover:text-amber"
+              >
+                {link.label}
+                <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-amber transition-all duration-300 group-hover:w-full" />
+              </Link>
+            ))}
+          </div>
 
-        <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/login">Sign In</Link>
-          </Button>
-          <Button variant="amber" size="sm" asChild>
-            <Link to="/candles">Donate Now</Link>
-          </Button>
-        </div>
-
-        <button
-          className="md:hidden text-foreground"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {isOpen && (
-        <div className="md:hidden bg-background border-b border-border px-4 pb-4">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              to={link.href}
-              className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
-              onClick={() => setIsOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="flex gap-2 mt-3">
-            <Button variant="ghost" size="sm" className="flex-1" asChild>
-              <Link to="/login">Sign In</Link>
+          <div className="hidden items-center gap-3 lg:flex">
+            <Button variant="ghost" size="sm" className="text-foreground/80 hover:text-foreground" asChild>
+              <Link to="/candles">Explore</Link>
             </Button>
-            <Button variant="amber" size="sm" className="flex-1" asChild>
-              <Link to="/candles">Donate Now</Link>
+            <Button variant="amber" size="sm" asChild>
+              <Link to="/candles" className="flex items-center gap-2">
+                <Heart className="h-4 w-4" />
+                Donate Now
+              </Link>
             </Button>
           </div>
+
+          <button
+            className={`p-2 text-foreground lg:hidden ${isScrolled ? "" : ""}`}
+            onClick={() => setIsOpen((value) => !value)}
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
-      )}
-    </nav>
+
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.24, ease: "easeOut" }}
+              className="overflow-hidden lg:hidden"
+            >
+              <div className="flex flex-col gap-2 border-t border-border pb-4 pt-4">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    className="rounded-lg px-4 py-2 text-foreground/80 transition-colors hover:bg-amber/5 hover:text-amber"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                <div className="mt-3 px-4">
+                  <Button variant="amber" className="w-full" asChild>
+                    <Link to="/candles" className="flex items-center justify-center gap-2">
+                      <Heart className="h-4 w-4" />
+                      Donate Now
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.nav>
+    </header>
   );
 };
 
